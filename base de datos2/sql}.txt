@@ -1,0 +1,144 @@
+/*==============================================================*/
+/* DBMS name:      MySQL 5.0                                    */
+/* Created on:     01/03/2023 12:28:36 a.m.                     */
+/*==============================================================*/
+
+
+drop table if exists CARRERA;
+
+drop table if exists ESTUDIANTE;
+
+drop table if exists INSCRIPCION;
+
+drop table if exists MATERIA;
+
+drop table if exists RECURSOS;
+
+drop table if exists ROL;
+
+drop table if exists ROL_RECURSO;
+
+drop table if exists USUARIO;
+
+/*==============================================================*/
+/* Table: CARRERA                                               */
+/*==============================================================*/
+create table CARRERA
+(
+   COD_CARRERA          numeric(3,0) not null,
+   NOMBRE_CARRERA       varchar(30),
+   MODALIDAD            varchar(30),
+   primary key (COD_CARRERA)
+);
+
+/*==============================================================*/
+/* Table: ESTUDIANTE                                            */
+/*==============================================================*/
+create table ESTUDIANTE
+(
+   CEDULA               numeric(9,0) not null,
+   COD_USR              numeric(3,0) not null,
+   PATERNO              varchar(30),
+   MATERNO              varchar(30),
+   NOMBRE               varchar(30),
+   FNACIMIENTO          date,
+   EXPEDIDO             varchar(30),
+   primary key (CEDULA)
+);
+
+/*==============================================================*/
+/* Table: INSCRIPCION                                           */
+/*==============================================================*/
+create table INSCRIPCION
+(
+   COD_INS              numeric(5,0) not null,
+   COD_MATERIA          numeric(3,0) not null,
+   CEDULA               numeric(9,0) not null,
+   FECHA_INS            date,
+   GESTION              numeric(5,0),
+   primary key (COD_INS)
+);
+
+/*==============================================================*/
+/* Table: MATERIA                                               */
+/*==============================================================*/
+create table MATERIA
+(
+   COD_MATERIA          numeric(3,0) not null,
+   COD_CARRERA          numeric(3,0) not null,
+   NOMBRE_MATERIA       varchar(30),
+   NIVEL                numeric(2,0),
+   GESTION              numeric(5,0),
+   primary key (COD_MATERIA)
+);
+
+/*==============================================================*/
+/* Table: RECURSOS                                              */
+/*==============================================================*/
+create table RECURSOS
+(
+   COD_REC              numeric(3,0) not null,
+   URL                  varchar(100),
+   NOMBRE_ENLACE        varchar(100),
+   ESTADO               varchar(100),
+   primary key (COD_REC)
+);
+
+/*==============================================================*/
+/* Table: ROL                                                   */
+/*==============================================================*/
+create table ROL
+(
+   COD_ROL              numeric(3,0) not null,
+   NOMBRE_ROL           varchar(30),
+   primary key (COD_ROL)
+);
+
+/*==============================================================*/
+/* Table: ROL_RECURSO                                           */
+/*==============================================================*/
+create table ROL_RECURSO
+(
+   COD_RREC             numeric(3,0) not null,
+   COD_REC              numeric(3,0) not null,
+   COD_ROL              numeric(3,0) not null,
+   primary key (COD_RREC)
+);
+
+/*==============================================================*/
+/* Table: USUARIO                                               */
+/*==============================================================*/
+create table USUARIO
+(
+   COD_USR              numeric(3,0) not null,
+   COD_ROL              numeric(3,0) not null,
+   NOMBRE_USR           varchar(30),
+   PATERNO_USR          varchar(30),
+   MATERNO_USR          varchar(30),
+   CEDULA_USR           numeric(8,0),
+   EXPEDIDO_USR         varchar(10),
+   CODIGO               varchar(30),
+   PASSWORD             varchar(200),
+   primary key (COD_USR)
+);
+
+alter table ESTUDIANTE add constraint FK_REGISTRA foreign key (COD_USR)
+      references USUARIO (COD_USR) on delete restrict on update restrict;
+
+alter table INSCRIPCION add constraint FK_INSCRIPCION foreign key (COD_MATERIA)
+      references MATERIA (COD_MATERIA) on delete restrict on update restrict;
+
+alter table INSCRIPCION add constraint FK_INSCRIPCION2 foreign key (CEDULA)
+      references ESTUDIANTE (CEDULA) on delete restrict on update restrict;
+
+alter table MATERIA add constraint FK_PERTENECE foreign key (COD_CARRERA)
+      references CARRERA (COD_CARRERA) on delete restrict on update restrict;
+
+alter table ROL_RECURSO add constraint FK_ROL_RECURSO foreign key (COD_REC)
+      references RECURSOS (COD_REC) on delete restrict on update restrict;
+
+alter table ROL_RECURSO add constraint FK_ROL_RECURSO2 foreign key (COD_ROL)
+      references ROL (COD_ROL) on delete restrict on update restrict;
+
+alter table USUARIO add constraint FK_TIENE foreign key (COD_ROL)
+      references ROL (COD_ROL) on delete restrict on update restrict;
